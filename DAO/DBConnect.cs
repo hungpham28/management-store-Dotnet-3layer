@@ -10,7 +10,7 @@ namespace DAO
 {
     class DBConnect
     {
-        private SqlConnection con = new SqlConnection(@"Data Source=DESKTOP-KREUSSJ\SQLEXPRESS;Initial Catalog=GoMartDB;Integrated Security=True");
+        private SqlConnection con = new SqlConnection(@"Data Source=LAPTOP-APAP7T81\SQLEXPRESS;Initial Catalog=GoMartDB;Integrated Security=True");
         public SqlConnection GetCon()
         {
             return con;

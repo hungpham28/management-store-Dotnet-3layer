@@ -53,7 +53,7 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(992, 44);
             this.panel1.TabIndex = 1;
@@ -85,9 +85,9 @@
             this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(0, 47);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox1.Size = new System.Drawing.Size(475, 302);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
@@ -111,7 +111,7 @@
             this.btnUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnUpdate.ForeColor = System.Drawing.Color.White;
             this.btnUpdate.Location = new System.Drawing.Point(247, 230);
-            this.btnUpdate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnUpdate.Margin = new System.Windows.Forms.Padding(4);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(107, 34);
             this.btnUpdate.TabIndex = 9;
@@ -126,7 +126,7 @@
             this.btnDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDelete.ForeColor = System.Drawing.Color.White;
             this.btnDelete.Location = new System.Drawing.Point(361, 230);
-            this.btnDelete.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnDelete.Margin = new System.Windows.Forms.Padding(4);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(107, 34);
             this.btnDelete.TabIndex = 7;
@@ -141,7 +141,7 @@
             this.btnAddCat.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAddCat.ForeColor = System.Drawing.Color.White;
             this.btnAddCat.Location = new System.Drawing.Point(132, 230);
-            this.btnAddCat.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAddCat.Margin = new System.Windows.Forms.Padding(4);
             this.btnAddCat.Name = "btnAddCat";
             this.btnAddCat.Size = new System.Drawing.Size(107, 34);
             this.btnAddCat.TabIndex = 8;
@@ -152,7 +152,7 @@
             // rtbCatDesc
             // 
             this.rtbCatDesc.Location = new System.Drawing.Point(208, 111);
-            this.rtbCatDesc.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rtbCatDesc.Margin = new System.Windows.Forms.Padding(4);
             this.rtbCatDesc.Name = "rtbCatDesc";
             this.rtbCatDesc.Size = new System.Drawing.Size(257, 101);
             this.rtbCatDesc.TabIndex = 6;
@@ -161,7 +161,7 @@
             // txtCatname
             // 
             this.txtCatname.Location = new System.Drawing.Point(157, 54);
-            this.txtCatname.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtCatname.Margin = new System.Windows.Forms.Padding(4);
             this.txtCatname.Name = "txtCatname";
             this.txtCatname.Size = new System.Drawing.Size(309, 24);
             this.txtCatname.TabIndex = 5;
@@ -200,8 +200,8 @@
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(476, 47);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dataGridView1.Location = new System.Drawing.Point(483, 47);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(4);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 51;
@@ -221,7 +221,7 @@
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimizeBox = false;
             this.Name = "frmCategory";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

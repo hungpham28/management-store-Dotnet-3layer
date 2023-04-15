@@ -8,12 +8,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BUS;
+using DTO;
 
 namespace GoMartApplication
 {
     public partial class SellingForm : Form
     {
-        DBConnect dbCon = new DBConnect();
+       // DBConnect dbCon = new DBConnect();
+        ProductBUS productBUS= new ProductBUS();
+        CategoryBUS categoryBUS= new CategoryBUS();
+        BillBUS billBUS = new BillBUS();
         public SellingForm()
         {
             InitializeComponent();
@@ -30,15 +35,12 @@ namespace GoMartApplication
         {
             try
             {
-                SqlCommand cmd = new SqlCommand("spGetAllProductList_SearchByCat", dbCon.GetCon());
-                cmd.Parameters.AddWithValue("@ProdCatID", cmbCategory.SelectedValue);
-                cmd.CommandType = CommandType.StoredProcedure;
-                dbCon.OpenCon();
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
+
                 DataTable dt = new DataTable();
-                da.Fill(dt);
+                dt = productBUS.getAllProductByCategory((int)cmbCategory.SelectedValue);
+               
                 dataGridView2_Product.DataSource = dt;
-                dbCon.CloseCon();
+                
             }
             catch (Exception ex)
             {
@@ -49,16 +51,16 @@ namespace GoMartApplication
         {
             try
             {
-                SqlCommand cmd = new SqlCommand("spGetCategory", dbCon.GetCon());
+              /*  SqlCommand cmd = new SqlCommand("spGetCategory", dbCon.GetCon());
                 cmd.CommandType = CommandType.StoredProcedure;
                 dbCon.OpenCon();
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);*/
                 DataTable dt = new DataTable();
-                da.Fill(dt);
+                dt = categoryBUS.spGetCategory();
                 cmbCategory.DataSource = dt;
                 cmbCategory.DisplayMember = "CategoryName";
                 cmbCategory.ValueMember = "CatID";
-                dbCon.CloseCon();
+                
             }
             catch (Exception ex)
             {
@@ -142,21 +144,27 @@ namespace GoMartApplication
                 }
                 else
                 {
-                    SqlCommand cmd = new SqlCommand("spInsertBill", dbCon.GetCon());
+                    BillDTO bill = new BillDTO();
+                    bill.billId = txtBillNo.Text;
+                    bill.sellerID =  FormLogin.loginname;
+                    bill.sellDate = lblDate.Text;
+                    bill.totalAmt = Convert.ToDouble(txtQty.Text);
+                    
+/*                    SqlCommand cmd = new SqlCommand("spInsertBill", dbCon.GetCon());
                     cmd.Parameters.AddWithValue("@Bill_ID", txtBillNo.Text);
                     cmd.Parameters.AddWithValue("@SellerID", FormLogin.loginname);
                     cmd.Parameters.AddWithValue("@SellDate", lblDate.Text);
                     cmd.Parameters.AddWithValue("@TotalAmt", Convert.ToDouble(txtQty.Text));
                     cmd.CommandType = CommandType.StoredProcedure;
-                    dbCon.OpenCon();
-                    int i = cmd.ExecuteNonQuery();
-                    if (i > 0)
+                    dbCon.OpenCon();*/
+                    /*int i = cmd.ExecuteNonQuery();*/
+                    if (billBUS.Add(bill))
                     {
                         BindBillList();
                         MessageBox.Show("Bill Added Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         clrtext();
                     }
-                    dbCon.CloseCon();
+                   /* dbCon.CloseCon();*/
                 }
 
             }
@@ -180,19 +188,26 @@ namespace GoMartApplication
         {
             try
             {
-                SqlCommand cmd = new SqlCommand("spGetBillList", dbCon.GetCon());
+               /* SqlCommand cmd = new SqlCommand("spGetBillList", dbCon.GetCon());
                 cmd.CommandType = CommandType.StoredProcedure;
                 dbCon.OpenCon();
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);*/
                 DataTable dt = new DataTable();
-                da.Fill(dt);
+                dt = billBUS.getAllBill();
+                //da.Fill(dt);
                 dataGridView1.DataSource = dt;
-                dbCon.CloseCon();
+                //dbCon.CloseCon();
+                
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -42,6 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdminDAO.cs" />
+    <Compile Include="CategoryDAO.cs" />
+    <Compile Include="BillDAO.cs" />
+    <Compile Include="ProductDAO.cs" />
     <Compile Include="DBConnect.cs" />
     <Compile Include="SellerDAO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
