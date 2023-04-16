@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+//login with AdminID and password
 namespace GoMartApplication
 {
     public partial class FormLogin : Form
@@ -115,6 +115,16 @@ namespace GoMartApplication
             {
                 Application.Exit();
             }
+        }
+
+        private void cmbRole_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
         }
 
         private void clrValue()

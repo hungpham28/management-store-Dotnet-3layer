@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BUS;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,12 +9,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+//nguyen code
 namespace GoMartApplication
 {
     public partial class AddAdmin : Form
     {
-        DBConnect dbCon = new DBConnect();
         public AddAdmin()
         {
             InitializeComponent();
@@ -21,6 +21,8 @@ namespace GoMartApplication
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
+            AdminBUS adminBUS = new AdminBUS();
+            //add new admin
             try
             {
                 if (txtAdminName.Text == String.Empty || txtAdminID.Text == String.Empty || txtPass.Text == String.Empty)
@@ -31,31 +33,21 @@ namespace GoMartApplication
                 else
                 {
                     //check duplicate record
-                    SqlCommand cmd = new SqlCommand("select AdminID from tblAdmin where AdminID=@ID", dbCon.GetCon());
-                    cmd.Parameters.AddWithValue("@ID", txtAdminID.Text);
-                    dbCon.OpenCon();
-                    var result = cmd.ExecuteScalar();
-                    if (result != null)
+                    bool result=adminBUS.checkDuplicateRecord(lblAdminID.Text);
+                    if (result)
                     {
                         MessageBox.Show("Admin ID already exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         clrbtn();
                     }
                     else
                     {
-                        cmd = new SqlCommand("spAddAdmin", dbCon.GetCon());
-                        cmd.Parameters.AddWithValue("@AdminID", txtAdminID.Text);
-                        cmd.Parameters.AddWithValue("@Password", txtPass.Text);
-                        cmd.Parameters.AddWithValue("@FullName", txtAdminName.Text);
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        int i = cmd.ExecuteNonQuery();
-                        if (i > 0)
+                        if (adminBUS.InsertAdmin(lblAdminID.Text, txtPass.Text, txtAdminName.Text))
                         {
                             MessageBox.Show("Admin Inserted Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             clrbtn();
                             BindAdmin();
                         }
                     }
-                    dbCon.CloseCon();
                 }
             }
             catch(Exception ex)
@@ -67,14 +59,9 @@ namespace GoMartApplication
 
         private void BindAdmin()
         {
-
-            SqlCommand cmd = new SqlCommand("select * from tblAdmin", dbCon.GetCon());
-            dbCon.OpenCon();
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
+            AdminBUS adminBUS=new AdminBUS();
+            DataTable dt = adminBUS.selectAll();
             dataGridView1.DataSource = dt;
-            dbCon.CloseCon();
         }
 
         private void AddAdmin_Load(object sender, EventArgs e)
@@ -96,6 +83,7 @@ namespace GoMartApplication
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
+            AdminBUS adminBUS = new AdminBUS();
             try
             {
                 if (txtAdminName.Text == String.Empty || txtAdminID.Text == String.Empty || txtPass.Text == String.Empty || lblAdminID.Text==String.Empty)
@@ -104,21 +92,13 @@ namespace GoMartApplication
                     clrbtn();
                 }
                 else
-                {                                      
-                    SqlCommand cmd = new SqlCommand("spUpdateAdmin", dbCon.GetCon());
-                    dbCon.OpenCon();
-                    cmd.Parameters.AddWithValue("@AdminID", lblAdminID.Text);
-                    cmd.Parameters.AddWithValue("@Password", txtPass.Text);
-                    cmd.Parameters.AddWithValue("@FullName", txtAdminName.Text);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    int i = cmd.ExecuteNonQuery();
-                    if (i > 0)
+                {
+                    if (adminBUS.UpdateAdmin(lblAdminID.Text, txtAdminName.Text, txtPass.Text))
                     {
                         MessageBox.Show("Admin record updated Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         clrbtn();
                         BindAdmin();
                     }
-                    dbCon.CloseCon();
                 }
             }
             catch (Exception ex)
@@ -129,6 +109,7 @@ namespace GoMartApplication
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
+            AdminBUS adminBUS = new AdminBUS();
             try
             {
                 if(lblAdminID.Text==String.Empty)
@@ -140,12 +121,7 @@ namespace GoMartApplication
                 {
                     if (DialogResult.Yes == MessageBox.Show("Do You Want to Delete?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
                     {
-                        SqlCommand cmd = new SqlCommand("spDeleteAdmin", dbCon.GetCon());
-                        cmd.Parameters.AddWithValue("@AdminID", lblAdminID.Text);
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        dbCon.OpenCon();
-                        int i = cmd.ExecuteNonQuery();
-                        if (i > 0)
+                        if (adminBUS.DeleteAdmin(lblAdminID.Text))
                         {
                             MessageBox.Show("Seller Deleted Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             clrbtn();
@@ -160,7 +136,6 @@ namespace GoMartApplication
                             MessageBox.Show("Delete failed...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             clrbtn();
                         }
-                        dbCon.CloseCon();
                     }
                 }
             }
@@ -190,6 +165,16 @@ namespace GoMartApplication
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
                         
+        }
+
+        private void txtAdminName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

@@ -195,5 +195,10 @@ namespace GoMartApplication
             txtPhone.Text = dataGridView1.SelectedRows[0].Cells[3].Value.ToString();
             txtPass.Text = dataGridView1.SelectedRows[0].Cells[4].Value.ToString();
         }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }

@@ -158,6 +158,7 @@
             this.txtAdminName.Name = "txtAdminName";
             this.txtAdminName.Size = new System.Drawing.Size(192, 21);
             this.txtAdminName.TabIndex = 5;
+            this.txtAdminName.TextChanged += new System.EventHandler(this.txtAdminName_TextChanged);
             // 
             // label2
             // 
@@ -192,6 +193,7 @@
             this.dataGridView1.ShowEditingIcon = false;
             this.dataGridView1.Size = new System.Drawing.Size(670, 211);
             this.dataGridView1.TabIndex = 5;
+            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             this.dataGridView1.Click += new System.EventHandler(this.dataGridView1_Click);
             // 
             // AddAdmin

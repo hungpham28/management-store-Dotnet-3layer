@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BUS;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,17 +9,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+// nguyen code
 namespace GoMartApplication
 {
     public partial class AddProduct : Form
     {
-        DBConnect dbCon = new DBConnect();
         public AddProduct()
         {
             InitializeComponent();
         }
-
+        private void BindProductList()
+        {
+            ProductBUS bus = new ProductBUS();
+            try
+            {
+                DataTable dt = bus.SelectAllProduct();
+                dataGridView1.DataSource = dt;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void AddProduct_Load(object sender, EventArgs e)
         {
             BindCategory();
@@ -32,33 +44,25 @@ namespace GoMartApplication
 
         private void BindCategory()
         {
-            SqlCommand cmd = new SqlCommand("spGetCategory", dbCon.GetCon());
-            cmd.CommandType = CommandType.StoredProcedure;
-            dbCon.OpenCon();
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
+            CategoryBUS catebus = new CategoryBUS();
+            DataTable dt=catebus.spGetCategory();
             cmbCategory.DataSource = dt;
             cmbCategory.DisplayMember = "CategoryName";
             cmbCategory.ValueMember = "CatID";
-            dbCon.CloseCon();
         }
         private void SearcgBy_Category()
         {
-            SqlCommand cmd = new SqlCommand("spGetCategory", dbCon.GetCon());
-            cmd.CommandType = CommandType.StoredProcedure;
-            dbCon.OpenCon();
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            cmbsearch.DataSource = dt;
-            cmbsearch.DisplayMember = "CategoryName";
-            cmbsearch.ValueMember = "CatID";
-            dbCon.CloseCon();
+            CategoryBUS catebus = new CategoryBUS();
+            DataTable dt = catebus.spGetCategory();
+            cmbCategory.DataSource = dt;
+            cmbCategory.DisplayMember = "CategoryName";
+            cmbCategory.ValueMember = "CatID";
         }
+
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
+            ProductBUS productBUS = new ProductBUS();
             try
             {
                 if (txtProdName.Text == String.Empty)
@@ -81,34 +85,20 @@ namespace GoMartApplication
                 }
                 else
                 {
-                    SqlCommand cmd = new SqlCommand("spCheckDuplicateProduct", dbCon.GetCon());
-                    cmd.Parameters.AddWithValue("@ProdName", txtProdName.Text);
-                    cmd.Parameters.AddWithValue("@ProdCatID", cmbCategory.SelectedValue);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    dbCon.OpenCon();
-                    var result = cmd.ExecuteScalar();
-                    if (result != null)
+                    if (productBUS.CheckDuplicateProduct(txtProdName.Text,Convert.ToInt32(cmbCategory.SelectedValue)))
                     {
                         MessageBox.Show("Product Name already exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         txtClear();
                     }
                     else
                     {
-                        cmd = new SqlCommand("spInsertProduct", dbCon.GetCon());
-                        cmd.Parameters.AddWithValue("@ProdName", txtProdName.Text);
-                        cmd.Parameters.AddWithValue("@ProdCatID", cmbCategory.SelectedValue);
-                        cmd.Parameters.AddWithValue("@ProdPrice", Convert.ToDecimal(txtPrice.Text));
-                        cmd.Parameters.AddWithValue("@ProdQty", Convert.ToInt32(txtQty.Text));
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        int i = cmd.ExecuteNonQuery();
-                        if (i > 0)
+                        if (productBUS.InsertProduct(txtProdName.Text, Convert.ToInt32(cmbCategory.SelectedValue), Convert.ToDecimal(txtPrice.Text), Convert.ToInt32(txtQty.Text)))
                         {
                             MessageBox.Show("Product Inserted Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             txtClear();
                             BindProductList();
                         }
                     }
-                    dbCon.CloseCon();
                 }
             }
             catch (Exception ex)
@@ -117,24 +107,7 @@ namespace GoMartApplication
             }
         }
 
-        private void BindProductList()
-        {
-            try
-            {
-                SqlCommand cmd = new SqlCommand("spGetAllProductList", dbCon.GetCon());
-                cmd.CommandType = CommandType.StoredProcedure;
-                dbCon.OpenCon();
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                dataGridView1.DataSource = dt;
-                dbCon.CloseCon();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }            
-        }
+       
 
         private void txtClear()
         {
@@ -145,6 +118,7 @@ namespace GoMartApplication
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
+            ProductBUS productBUS = new ProductBUS();
             try
             {
                 if (lblProdID.Text=="" && txtProdName.Text == String.Empty)
@@ -167,45 +141,28 @@ namespace GoMartApplication
                 }
                 else
                 {
-                    //SqlCommand cmd = new SqlCommand("spCheckDuplicateProduct", dbCon.GetCon());
-                    //cmd.Parameters.AddWithValue("@ProdName", txtProdName.Text);
-                    //cmd.Parameters.AddWithValue("@ProdCatID", cmbCategory.SelectedValue);
-                    //cmd.CommandType = CommandType.StoredProcedure;
-                    //dbCon.OpenCon();
-                    //var result = cmd.ExecuteScalar();
-                    //if (result != null)
-                    //{
-                    //    MessageBox.Show("Product Name already exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    //    txtClear();
-                    //}
-                    //else
-                    //{
-                        
-                    //}
-                    SqlCommand cmd = new SqlCommand("spUpdateProduct", dbCon.GetCon());
-                    cmd.Parameters.AddWithValue("@ProdName", txtProdName.Text);
-                    cmd.Parameters.AddWithValue("@ProdCatID", cmbCategory.SelectedValue);
-                    cmd.Parameters.AddWithValue("@ProdPrice", Convert.ToDecimal(txtPrice.Text));
-                    cmd.Parameters.AddWithValue("@ProdQty", Convert.ToInt32(txtQty.Text));
-                    cmd.Parameters.AddWithValue("@ProdID", Convert.ToInt32(lblProdID.Text));
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    dbCon.OpenCon();
-                    int i = cmd.ExecuteNonQuery();
-                    if (i > 0)
+                    if (productBUS.CheckDuplicateProduct(txtProdName.Text, Convert.ToInt32(cmbCategory.SelectedValue)))
                     {
-                        MessageBox.Show("Product Updated Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Product Name already exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         txtClear();
-                        BindProductList();
-                        lblProdID.Visible = false;
-                        btnAdd.Visible = true;
-                        btnUpdate.Visible = false;
-                        btnDelete.Visible = false;
                     }
                     else
                     {
-                        MessageBox.Show("Updation Failed", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        if (productBUS.UpdateProduct(txtProdName.Text, Convert.ToInt32(cmbCategory.SelectedValue), Convert.ToDecimal(txtPrice.Text), Convert.ToInt32(txtQty.Text)))
+                        {
+                            MessageBox.Show("Product Updated Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            txtClear();
+                            BindProductList();
+                            lblProdID.Visible = false;
+                            btnAdd.Visible = true;
+                            btnUpdate.Visible = false;
+                            btnDelete.Visible = false;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Updation Failed", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
-                    dbCon.CloseCon();
                 }
             }
             catch (Exception ex)
@@ -238,6 +195,7 @@ namespace GoMartApplication
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
+            ProductBUS productBUS= new ProductBUS();
             try
             {
                 if (lblProdID.Text == String.Empty)
@@ -249,12 +207,7 @@ namespace GoMartApplication
                 {
                     if (DialogResult.Yes == MessageBox.Show("Do You Want to Delete?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
                     {
-                        SqlCommand cmd = new SqlCommand("spDeleteProduct", dbCon.GetCon());
-                        cmd.Parameters.AddWithValue("@ProdID", Convert.ToInt32(lblProdID.Text));
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        dbCon.OpenCon();
-                        int i = cmd.ExecuteNonQuery();
-                        if (i > 0)
+                        if (productBUS.DeleteProduct(Convert.ToInt32(lblProdID.Text)))
                         {
                             MessageBox.Show("Product Deleted Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             txtClear();
@@ -269,7 +222,6 @@ namespace GoMartApplication
                             MessageBox.Show("Delete failed...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             txtClear();
                         }
-                        dbCon.CloseCon();
                     }
 
                 }
@@ -287,23 +239,20 @@ namespace GoMartApplication
         }
         private void Searched_ProductList()
         {
+            ProductBUS productBUS = new ProductBUS();
             try
             {
-                SqlCommand cmd = new SqlCommand("spGetAllProductList_SearchByCat", dbCon.GetCon());
-                cmd.Parameters.AddWithValue("@ProdCatID",cmbsearch.SelectedValue);
-                cmd.CommandType = CommandType.StoredProcedure;
-                dbCon.OpenCon();
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
+                DataTable dt = productBUS.GetAllProductList_SearchByCat(Convert.ToInt32(cmbsearch.SelectedValue));
                 dataGridView1.DataSource = dt;
-                dbCon.CloseCon();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+
+
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -313,6 +262,11 @@ namespace GoMartApplication
         private void button1_Click(object sender, EventArgs e)
         {
             BindProductList();
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

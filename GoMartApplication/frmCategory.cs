@@ -8,12 +8,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BUS;
+using DTO;
 
 namespace GoMartApplication
 {
     public partial class frmCategory : Form
     {
-        DBConnect dbCon = new DBConnect();
+        //DBConnect dbCon = new DBConnect();
+        private CategoryBUS categoryBUS = new CategoryBUS();
         public frmCategory()
         {
             InitializeComponent();
@@ -43,30 +46,29 @@ namespace GoMartApplication
             }
             else
             {
-                SqlCommand cmd = new SqlCommand("select CategoryName from tblCategory where CategoryName=@CategoryName", dbCon.GetCon());
-                cmd.Parameters.AddWithValue("@CategoryName", txtCatname.Text);
-                dbCon.OpenCon();
-                var result = cmd.ExecuteScalar();
-                if(result!=null)
+                /*  SqlCommand cmd = new SqlCommand("select CategoryName from tblCategory where CategoryName=@CategoryName", dbCon.GetCon());
+                  cmd.Parameters.AddWithValue("@CategoryName", txtCatname.Text);
+                  dbCon.OpenCon();*/
+                var result = categoryBUS.IsExistCategoryName(txtCatname.Text);
+                if (result)
                 {
                     MessageBox.Show("CategoryName already exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     txtClear();
                 }
                 else
                 {
-                    cmd = new SqlCommand("spCatInsert", dbCon.GetCon());
-                    cmd.Parameters.AddWithValue("@CategoryName", txtCatname.Text);
-                    cmd.Parameters.AddWithValue("@CategoryDesc", rtbCatDesc.Text);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    int i = cmd.ExecuteNonQuery();   
-                    if(i>0)
+                    CategoryDTO category = new CategoryDTO();
+                    category.categoryName = txtCatname.Text;
+                    category.categoryDesc = rtbCatDesc.Text;
+
+                    if (categoryBUS.Add(category))
                     {
                         MessageBox.Show("Category Inserted Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         txtClear();
                         BindCategory();
                     }
                 }
-                dbCon.CloseCon(); 
+                //dbCon.CloseCon(); 
             }
 
         }
@@ -76,18 +78,19 @@ namespace GoMartApplication
         }
         private void BindCategory()
         {
-            SqlCommand cmd = new SqlCommand("select  CatID as CategoryID,CategoryName,CategoryDesc as CategoryDescription from tblCategory", dbCon.GetCon());
+            /*SqlCommand cmd = new SqlCommand("select  CatID as CategoryID,CategoryName,CategoryDesc as CategoryDescription from tblCategory", dbCon.GetCon());
             dbCon.OpenCon();
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);*/
             DataTable dt = new DataTable();
-            da.Fill(dt);
-            dataGridView1.DataSource=dt;
-            dbCon.CloseCon();
+            //da.Fill(dt);
+            dt = categoryBUS.getrlCategory();
+            dataGridView1.DataSource = dt;
+            //dbCon.CloseCon();
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-           
+
         }
 
         private void dataGridView1_Click(object sender, EventArgs e)
@@ -126,25 +129,23 @@ namespace GoMartApplication
                 }
                 else
                 {
-                    SqlCommand cmd = new SqlCommand("select CategoryName from tblCategory where CategoryName=@CategoryName", dbCon.GetCon());
-                    cmd.Parameters.AddWithValue("@CategoryName", txtCatname.Text);
-                    dbCon.OpenCon();
-                    var result = cmd.ExecuteScalar();
-                    if (result != null)
+
+                    //var result = cmd.ExecuteScalar();
+                    var result = categoryBUS.IsExistCategoryName(txtCatname.Text, Convert.ToInt32(lblCatID.Text));
+                    if (result)
                     {
                         MessageBox.Show("CategoryName already exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         txtClear();
                     }
                     else
                     {
-                        cmd = new SqlCommand("spCatUpdate", dbCon.GetCon());
-                        cmd.Parameters.AddWithValue("@CatID", Convert.ToInt32(lblCatID.Text));
-                        cmd.Parameters.AddWithValue("@CategoryName", txtCatname.Text);
-                        cmd.Parameters.AddWithValue("@CategoryDesc", rtbCatDesc.Text);
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        int i = cmd.ExecuteNonQuery();
-                        dbCon.CloseCon();
-                        if (i > 0)
+                        CategoryDTO category = new CategoryDTO();
+                        category.catId = Convert.ToInt32(lblCatID.Text);
+                        category.categoryName = txtCatname.Text;
+                        category.categoryDesc = rtbCatDesc.Text;
+
+
+                        if (categoryBUS.Update(category))
                         {
                             MessageBox.Show("Category updated Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             txtClear();
@@ -160,14 +161,14 @@ namespace GoMartApplication
                             txtClear();
                         }
                     }
-                    dbCon.CloseCon();
+
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
+
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
@@ -179,16 +180,12 @@ namespace GoMartApplication
                     MessageBox.Show("Please select CategoryID", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                if(lblCatID.Text != String.Empty)
+                if (lblCatID.Text != String.Empty)
                 {
-                    if(DialogResult.Yes==MessageBox.Show("Do You Want to Delete?","Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
+                    if (DialogResult.Yes == MessageBox.Show("Do You Want to Delete?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
                     {
-                        SqlCommand cmd = new SqlCommand("spCatDelete", dbCon.GetCon());
-                        cmd.Parameters.AddWithValue("@CatID", Convert.ToInt32(lblCatID.Text));
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        dbCon.OpenCon();
-                        int i = cmd.ExecuteNonQuery();
-                        if (i > 0)
+
+                        if (categoryBUS.DeleteById(Convert.ToInt32(lblCatID.Text)))
                         {
                             MessageBox.Show("Category Deleted Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             txtClear();
@@ -203,12 +200,12 @@ namespace GoMartApplication
                             MessageBox.Show("Delete failed...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             txtClear();
                         }
-                        dbCon.CloseCon();
+
                     }
-                    
+
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
